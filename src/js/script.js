@@ -10,7 +10,7 @@ const context = board.getContext('2d'); //per disegnare sul canvas
 //gestione dell'uccello
 let bird = {
     x : canvasWidth/8,
-    y : canvasHeight/2,
+    y : 0,
     width : 34,
     height : 24,
     image : new Image
@@ -35,9 +35,13 @@ let score = 0;
 
 let lastTime = 0;
 
+const playBtn = document.getElementById('playBtn');
+let gameStarted = false;
+
 window.onload = function(){
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+    bird.y = canvasHeight * scale / 2;
     //board.width = canvasWidth;
     //board.height = canvasHeight;
     bird.image.src = './assets/img/flappybird.png';
@@ -58,8 +62,21 @@ window.onload = function(){
     board.addEventListener('mousedown', jump);
 }
 
+function playGame(){ 
+    gameStarted = true;
+    playBtn.style.display = 'none';
+    resetGame();
+    context.fillStyle = 'red';
+    context.fillText('press space to start', canvasWidth/3, 45); 
+}
+
 function update(currentTime){ //currentTime è il tempo attuale in millisecondi e viene passato automaticamente da requestAnimationFrame
     requestAnimationFrame(update);
+
+    if(!gameStarted){
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        return;
+    }
 
     if(gameover){
         context.fillStyle = 'red';
@@ -160,11 +177,15 @@ function jump(){
 
         //resettare il gioco se si ha perso
         if(gameover){
-            bird.y = canvasHeight/2;
-            pipes = [];
-            score = 0;
-            gameover = false;
+            resetGame();
         }
+}
+
+function resetGame(){
+    bird.y = canvasHeight/2;
+    pipes = [];
+    score = 0;
+    gameover = false;
 }
 
 //2 rettangoli, a e b, a è l'uccello, b invece è il tubo
