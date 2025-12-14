@@ -58,7 +58,7 @@ window.onload = function(){
     board.addEventListener('mousedown', jump);
 }
 
-function update(currentTime){
+function update(currentTime){ //currentTime è il tempo attuale in millisecondi e viene passato automaticamente da requestAnimationFrame
     requestAnimationFrame(update);
 
     if(gameover){
@@ -67,13 +67,13 @@ function update(currentTime){
         return;
     }
 
-    const deltaTime = (currentTime - lastTime)/1000;
-    lastTime = currentTime;
+    const deltaTime = (currentTime - lastTime)/1000; //serve per 'sincronizzare' la velocità del gioco tra dispositivi che lavorano a diversi fps, ad esempio android lavora a fps diversi da IOS 
+    lastTime = currentTime; //aggiorna lastTime e lo mette a currentTime
 
     context.clearRect(0, 0, canvasWidth, canvasHeight);
 
     //applica la gravita alla velocitàY, massimo l'altezza del canvas, quindi non può sotto quel valore
-    velocityY += gravity * deltaTime * 60;
+    velocityY += gravity * deltaTime * 60; //moltiplichiamo per deltaTime e per 60 per normalizzare la velocità in base agli fps del dispostivo su cui si gioca
     bird.y = Math.max(bird.y + velocityY * deltaTime * 60, 0) //applica la velocitàY all'uccello, per un massimo di 0, quindi non può andare sopra 0
     context.drawImage(bird.image, bird.x, bird.y, bird.width, bird.height);
 
@@ -83,7 +83,7 @@ function update(currentTime){
 
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
-        pipe.x += velocityX * deltaTime * 60; //la facciamo muovere verso sinistra
+        pipe.x += velocityX * deltaTime * 60; //la facciamo muovere verso sinistra, moltiplichiamo per deltaTime e per 60 per normalizzare la velocità in base agli fps del dispostivo su cui si gioca
         context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height);
 
         if(!pipe.passed && bird.x > pipe.x + pipe.width) {
@@ -126,7 +126,7 @@ function placePipes(){
     //pipeHeight/4 serve per far vedere solo 3/4 del tubo a schermo
     //Math.random()*(pipeHeight/2) il (pipeHeight/2) randomizza il range tra -128 e -256, quindi da -1/4 dell'altezza a -3/4 dell'altezza
     let randomPipeY = pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2); //randomizza la posizione Y del tubo
-    const openingSpace = canvasHeight/5;
+    const openingSpace = canvasHeight/5; //lo spazio tra i due tubi, dividiamo canvasHeight(che viene modificato in base al dispositivo) per 5
 
     let topPipe = {
         img : topPipeImg,
