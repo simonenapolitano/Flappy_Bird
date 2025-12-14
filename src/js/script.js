@@ -140,6 +140,18 @@ function moveBird(e){
     }
 }
 
+function jump(){
+    velocityY = -6;
+
+        //resettare il gioco se si ha perso
+        if(gameover){
+            bird.y = canvasHeight/2;
+            pipes = [];
+            score = 0;
+            gameover = false;
+        }
+}
+
 //2 rettangoli, a e b, a è l'uccello, b invece è il tubo
 function detectCollision(a, b){ //questa funzione ritorna un valore vero o falso in base alle posizioni del tubo e dell'uccello
     return  a.x < b.x + b.width && //se la posizione x dell'uccello è minore della posizione x del tubo sommata alla sua larghezza &&(riga sotto)
@@ -149,3 +161,4 @@ function detectCollision(a, b){ //questa funzione ritorna un valore vero o falso
                                  //allora ritorna vero, senò falso
 
 }
+
