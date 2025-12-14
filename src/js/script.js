@@ -44,6 +44,11 @@ window.onload = function(){
     requestAnimationFrame(update);
     setInterval(placePipes, 1500); //chiama la funzione 'placePipes' ogni 1500 millisecondi(1.5 secondi)
     document.addEventListener('keydown', moveBird);
+    board.addEventListener('touchstart', function(e){
+        e.preventDefault();
+        jump();
+    });
+    board.addEventListener('mousedown', jump);
 }
 
 function update(){
@@ -142,4 +147,5 @@ function detectCollision(a, b){ //questa funzione ritorna un valore vero o falso
             a.y < b.y + b.height && //se la posizione y dell'uccello è minore della posizione y del tubo sommata alla sua altezza &&(riga sotto)
             a.y + a.height > b.y //se la posizione y dell'uccello sommata alla sua altezza è maggiore della posizione y del tubo
                                  //allora ritorna vero, senò falso
+
 }
