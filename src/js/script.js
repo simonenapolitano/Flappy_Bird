@@ -2,6 +2,9 @@
 const board = document.getElementById('board');
 const canvasWidth = 360;
 const canvasHeight = 640;
+
+let scale = 1;
+
 const context = board.getContext('2d'); //per disegnare sul canvas
 
 //gestione dell'uccello
@@ -33,12 +36,14 @@ let score = 0;
 let lastTime = 0;
 
 window.onload = function(){
-    board.width = canvasWidth;
-    board.height = canvasHeight;
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    //board.width = canvasWidth;
+    //board.height = canvasHeight;
     bird.image.src = './assets/img/flappybird.png';
-    bird.image.onload = function(){
+    /*bird.image.onload = function(){
         context.drawImage(bird.image, bird.x, bird.y, bird.width, bird.height);
-    }
+    }*/
 
     topPipeImg.src = './assets/img/toppipe.png';
     bottomPipeImg.src = './assets/img/bottompipe.png';
@@ -101,6 +106,18 @@ function update(currentTime){
     context.fillText(score, 5, 45); 
 }
 
+function resizeCanvas(){
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    scale = Math.min(windowWidth / canvasWidth, windowHeight / canvasHeight);
+
+    board.width = canvasWidth * scale;
+    board.height = canvasHeight * scale;
+
+    context.setTransform(scale, 0, 0, scale, 0, 0);
+}
+
 function placePipes(){
     if(gameover){
         return;
@@ -109,7 +126,7 @@ function placePipes(){
     //pipeHeight/4 serve per far vedere solo 3/4 del tubo a schermo
     //Math.random()*(pipeHeight/2) il (pipeHeight/2) randomizza il range tra -128 e -256, quindi da -1/4 dell'altezza a -3/4 dell'altezza
     let randomPipeY = pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2); //randomizza la posizione Y del tubo
-    const openingSpace = board.height/5;
+    const openingSpace = canvasHeight/5;
 
     let topPipe = {
         img : topPipeImg,
