@@ -30,6 +30,8 @@ const gravity = 0.4; //la gravità, simula la caduta, ad esempio 0.4 pixel al se
 let gameover = false;
 let score = 0;
 
+let lastTime = 0;
+
 window.onload = function(){
     board.width = canvasWidth;
     board.height = canvasHeight;
@@ -51,19 +53,23 @@ window.onload = function(){
     board.addEventListener('mousedown', jump);
 }
 
-function update(){
+function update(currentTime){
     requestAnimationFrame(update);
+
     if(gameover){
         context.fillStyle = 'red';
         context.fillText('game over', canvasWidth/3, 45); 
         return;
     }
 
+    const deltaTime = (currentTime - lastTime)/1000;
+    lastTime = currentTime;
+
     context.clearRect(0, 0, canvasWidth, canvasHeight);
 
     //applica la gravita alla velocitàY, massimo l'altezza del canvas, quindi non può sotto quel valore
-    velocityY += gravity;
-    bird.y = Math.max(bird.y + velocityY, 0) //applica la velocitàY all'uccello, per un massimo di 0, quindi non può andare sopra 0
+    velocityY += gravity * deltaTime * 60;
+    bird.y = Math.max(bird.y + velocityY * deltaTime * 60, 0) //applica la velocitàY all'uccello, per un massimo di 0, quindi non può andare sopra 0
     context.drawImage(bird.image, bird.x, bird.y, bird.width, bird.height);
 
     if(bird.y > canvasHeight){
@@ -72,7 +78,7 @@ function update(){
 
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
-        pipe.x += velocityX; //la facciamo muovere verso sinistra
+        pipe.x += velocityX * deltaTime * 60; //la facciamo muovere verso sinistra
         context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height);
 
         if(!pipe.passed && bird.x > pipe.x + pipe.width) {
@@ -128,15 +134,7 @@ function placePipes(){
 
 function moveBird(e){
     if(e.code == 'Space' || e.code == 'ArrowUp'){
-        velocityY = -6;
-
-        //resettare il gioco se si ha perso
-        if(gameover){
-            bird.y = canvasHeight/2;
-            pipes = [];
-            score = 0;
-            gameover = false;
-        }
+        jump();
     }
 }
 
@@ -159,6 +157,4 @@ function detectCollision(a, b){ //questa funzione ritorna un valore vero o falso
             a.y < b.y + b.height && //se la posizione y dell'uccello è minore della posizione y del tubo sommata alla sua altezza &&(riga sotto)
             a.y + a.height > b.y //se la posizione y dell'uccello sommata alla sua altezza è maggiore della posizione y del tubo
                                  //allora ritorna vero, senò falso
-
 }
-
