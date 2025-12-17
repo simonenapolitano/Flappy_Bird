@@ -26,28 +26,26 @@ let topPipeImg = new Image;
 let bottomPipeImg = new Image;
 
 //gestione della fisica del movimento
-let velocityX = -2; //la velocità a cui i tubi si muovono verso sinistra
+const velocityX = -2; //la velocità a cui i tubi si muovono verso sinistra
 let velocityY = 0; //lo spazio che percorre l'uccello sull'asse y quando salta
 const gravity = 0.4; //la gravità, simula la caduta, ad esempio 0.4 pixel al secondo
 
 let gameover = false;
+let gameStarted = false;
+
 let score = 0;
 
 let lastTime = 0;
 
 const playBtn = document.getElementById('playBtn');
-let gameStarted = false;
 
 window.onload = function(){
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+    console.log('bird.y before:', bird.y);
     bird.y = canvasHeight * scale / 2;
-    //board.width = canvasWidth;
-    //board.height = canvasHeight;
+    console.log('bird.y after:', bird.y);
     bird.image.src = './assets/img/flappybird.png';
-    /*bird.image.onload = function(){
-        context.drawImage(bird.image, bird.x, bird.y, bird.width, bird.height);
-    }*/
 
     topPipeImg.src = './assets/img/toppipe.png';
     bottomPipeImg.src = './assets/img/bottompipe.png';
@@ -62,12 +60,13 @@ window.onload = function(){
     board.addEventListener('mousedown', jump);
 }
 
-function playGame(){ 
+function playGame(){
+    context.font = '20px sans-serif';
+    context.fillStyle = 'green';
+    context.fillText('press space to start', canvasWidth/3, 45); 
     gameStarted = true;
     playBtn.style.display = 'none';
     resetGame();
-    context.fillStyle = 'red';
-    context.fillText('press space to start', canvasWidth/3, 45); 
 }
 
 function update(currentTime){ //currentTime è il tempo attuale in millisecondi e viene passato automaticamente da requestAnimationFrame
@@ -90,8 +89,14 @@ function update(currentTime){ //currentTime è il tempo attuale in millisecondi 
     context.clearRect(0, 0, canvasWidth, canvasHeight);
 
     //applica la gravita alla velocitàY, massimo l'altezza del canvas, quindi non può sotto quel valore
-    velocityY += gravity * deltaTime * 60; //moltiplichiamo per deltaTime e per 60 per normalizzare la velocità in base agli fps del dispostivo su cui si gioca
-    bird.y = Math.max(bird.y + velocityY * deltaTime * 60, 0) //applica la velocitàY all'uccello, per un massimo di 0, quindi non può andare sopra 0
+    console.log('velocityY before: ', velocityY);
+    velocityY += gravity; //moltiplichiamo per deltaTime e per 60 per normalizzare la velocità in base agli fps del dispostivo su cui si gioca
+    console.log('velocityY after: ', velocityY);
+    bird.y = Math.max(bird.y + velocityY, 0) //applica la velocitàY all'uccello, per un massimo di 0, quindi non può andare sopra 0
+    if(!gameStarted){
+        bird.y = canvasHeight * scale / 2;
+        velocityY = 0;
+    }
     context.drawImage(bird.image, bird.x, bird.y, bird.width, bird.height);
 
     if(bird.y > canvasHeight){
@@ -163,6 +168,7 @@ function placePipes(){
         height : pipeHeight,
         passed : false
     }
+
     pipes.push(bottomPipe);
 }
 
@@ -182,10 +188,13 @@ function jump(){
 }
 
 function resetGame(){
-    bird.y = canvasHeight/2;
+    console.log('resetting game');
+    velocityY = 0;
+    bird.y = canvasHeight /2;
     pipes = [];
     score = 0;
     gameover = false;
+    gameStarted = true;
 }
 
 //2 rettangoli, a e b, a è l'uccello, b invece è il tubo
